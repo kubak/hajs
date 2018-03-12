@@ -1,0 +1,10 @@
+.phases li {
+  list-style: none;
+  width: 200px;
+  border: 1px solid #eee;
+  border-top: none;
+  padding: 5px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+}
