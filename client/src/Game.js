@@ -44,7 +44,10 @@ const Hajs = Game({
 */
   moves: {
     takeCard: (G, ctx) => { 
-      // @todo only allow taking one card per turn
+      // only allow taking one card per turn
+      if (ctx.currentPlayer !== ctx.playerID) {
+         return G;
+      }
 
       // do not mutate G
       const card = G.deck[G.deck.length - 1];
@@ -68,7 +71,10 @@ const Hajs = Game({
       return ret;
     },
     playCard: (G, ctx) => {
-      // @todo only allow playing one card per turn
+      // only allow playing one card per turn
+      if (ctx.playerID !== ctx.currentPlayer) {
+         return G;
+      }
 
       // do not mutate G
       const card = G.players[ctx.playerID].hand[G.players[ctx.playerID].hand.length - 1];
@@ -96,8 +102,8 @@ const Hajs = Game({
     phases: [
       {
         name: 'take phase',
-        endPhaseIf: (G) => {
-          return G.deck.length === 0; 
+        endPhaseIf: (G, ctx) => {
+           return G.deck.length === 0;
         },
         allowedMoves: ['takeCard'],
         onPhaseBegin: (G, ctx) => {
@@ -111,9 +117,9 @@ const Hajs = Game({
       {
         name: 'play phase',
         allowedMoves: ['playCard'],
-        endPhaseIf: (G) => { 
+        endPhaseIf: (G) => {
          const handsLength = Object.keys(G.players).reduce((previous, current) => { 
-            return previous += G.players[current].hand.length; 
+            return previous += G.players[current].hand.length;
          }, 0);
          return handsLength === 0;
         },
@@ -139,21 +145,22 @@ const Hajs = Game({
          return winner;
       }
     },
+
     endTurnIf: (G, ctx) => {
       // end turn if all players taken/played one card
       if (ctx.phase === 'take phase') {
-        console.log('take phase end turn', G.deck.length, '===', Cards.length - (ctx.turn + 1) * ctx.numPlayers);
-        if (G.deck.length === Cards.length - (ctx.turn + 1) * ctx.numPlayers) {
-          return true;
-        }
+         console.log('take phase end turn', G.deck.length, '===', Cards.length - (ctx.turn + 1) * ctx.numPlayers);
+         if (G.deck.length === Cards.length - (ctx.turn + 1) * ctx.numPlayers) {
+            return true;
+         }
       } else {
          const handsLength = Object.keys(G.players).reduce((previous, current) => { 
             return previous += G.players[current].hand.length;
          }, 0);
-        console.log('play phase end turn', handsLength, '===', Cards.length - ((ctx.turn + 1) - Cards.length / ctx.numPlayers) * ctx.numPlayers);
-        if (handsLength === Cards.length - ((ctx.turn + 1) - Cards.length / ctx.numPlayers) * ctx.numPlayers) {
-          return true;
-        }
+         console.log('play phase end turn', handsLength, '===', Cards.length - ((ctx.turn + 1) - Cards.length / ctx.numPlayers) * ctx.numPlayers);
+         if (handsLength === Cards.length - ((ctx.turn + 1) - Cards.length / ctx.numPlayers) * ctx.numPlayers) {
+            return true;
+         }
       }
       return false;
       
@@ -168,6 +175,7 @@ const Hajs = Game({
       // 4 0 2
       // 5 0 0
     }
+
   }
 });
 

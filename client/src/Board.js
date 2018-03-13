@@ -16,6 +16,10 @@ class Board extends React.Component {
     if (this.props.ctx.phase !== 'take phase') {
       return;
     }
+      // only one card per turn
+      if (this.props.playerID !== this.props.ctx.currentPlayer) {
+         return;
+      }
     this.props.moves.takeCard();
     this.props.events.endTurn();
   };
@@ -24,6 +28,10 @@ class Board extends React.Component {
     if (this.props.ctx.phase !== 'play phase') {
       return;
     }
+      // only one card per turn
+      if (this.props.playerID !== this.props.ctx.currentPlayer) {
+         return;
+      }
     this.props.moves.playCard();
     this.props.events.endTurn();
   };
@@ -44,12 +52,12 @@ class Board extends React.Component {
             <li>Deck: {this.props.G.deck.length}</li>
             <li>Hand: {this.props.G.players[this.props.playerID].hand.length}</li>
             <li>
-               <button id="take" onClick={this.takeCard}>
+               <button id="take" onClick={this.takeCard} disabled={!this.props.isActive}>
                   Take Card
                </button>
             </li>
             <li>
-               <button id="play" onClick={this.playCard}>
+               <button id="play" onClick={this.playCard} disabled={!this.props.isActive}>
                   Play Card
                </button>
             </li>
