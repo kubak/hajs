@@ -6,7 +6,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no tests yet @todo\" && exit 1",
-    "dev": "babel-node --presets env --plugins transform-object-rest-spread --inspect server.js",
+    "dev": "babel-node --presets env --plugins transform-object-rest-spread --inspect server.js --source-maps",
+    "dev-brk": "babel-node --presets env --plugins transform-object-rest-spread --inspect-brk server.js --source-maps",
     "start": "node server.js"
   },
   "keywords": [
@@ -18,7 +19,7 @@
   "dependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "boardgame.io": "^0.20.0",
+    "boardgame.io": "^0.20.1",
     "install": "^0.10.4",
     "npm": "^5.7.1"
   },
