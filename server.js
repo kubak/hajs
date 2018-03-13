@@ -1,6 +1,6 @@
 const KoaStatic = require('koa-static');
 const Server = require('boardgame.io/server').Server;
-const Hajs = require('./client/src/Game.js');
+const Hajs = require('./client/src/Game.js').default;
 
 const server = Server({ games: [Hajs] });
 server.app.use(KoaStatic('./client/build/'));
