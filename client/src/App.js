@@ -1,11 +1,11 @@
 import React from 'react';
 import { Client } from 'boardgame.io/react';
-import TicTacToe from './Game';
+import Hajs from './Game';
 import Board from './Board';
 import './App.css';
 
 const App = Client({
-  game: TicTacToe,
+  game: Hajs,
   board: Board,
   debug: false,
   multiplayer: { server: 'localhost:8000' },
