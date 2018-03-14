@@ -20,7 +20,7 @@ class HajsCard extends React.Component {
 
 class Board extends React.Component {
 
-  takeCard = () => {
+  takeCard = (id) => {
     if (this.props.ctx.phase !== 'take phase') {
       return;
     }
@@ -28,7 +28,7 @@ class Board extends React.Component {
       if (this.props.playerID !== this.props.ctx.currentPlayer) {
          return;
       }
-    this.props.moves.takeCard();
+    this.props.moves.takeCard(id);
     this.props.events.endTurn();
   };
 
@@ -52,7 +52,11 @@ class Board extends React.Component {
       return (
          <li>
             Deck: {deck.map((tmp) => {
-               return (<HajsCard key={tmp} front={tmp} />)
+               return (
+                  <div key={tmp.id} onClick={() => this.takeCard(tmp.id)}>
+                     <HajsCard key={tmp.id} front={tmp.id} />
+                  </div>
+               );
             })}
          </li>
       );
@@ -63,7 +67,7 @@ class Board extends React.Component {
       return (
          <li>
             Hand: {hand.map((tmp) => {
-               return (<HajsCard key={tmp} front={tmp} />);
+               return (<HajsCard key={tmp.id} front={tmp.id} />);
             })}
          </li>
       );
@@ -84,11 +88,6 @@ class Board extends React.Component {
             <li style={{ background: '#aaa' }}>{this.props.ctx.phase}</li>
             {this.renderDeck()}
             {this.renderHand()}
-            <li>
-               <button id="take" onClick={this.takeCard} disabled={!this.props.isActive}>
-                  Take Card
-               </button>
-            </li>
             <li>
                <button id="play" onClick={this.playCard} disabled={!this.props.isActive}>
                   Play Card

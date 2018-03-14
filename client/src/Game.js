@@ -9,7 +9,14 @@
 import { Game, TurnOrder } from 'boardgame.io/core';
 //const Game = require('boardgame.io/core').Game;
 
-const Cards = [1,2,3,4,5,6];
+const Cards = [
+   { id : 1, score : 1 },
+   { id : 2, score : 2 },
+   { id : 3, score : 3 },
+   { id : 4, score : 4 },
+   { id : 5, score : 5 },
+   { id : 6, score : 6 }
+];
 
 const Hajs = Game({
   name : 'Hajs',
@@ -45,7 +52,7 @@ const Hajs = Game({
   },
 */
   moves: {
-    takeCard: (G, ctx) => { 
+    takeCard: (G, ctx, cardID) => {
       // only allow taking one card per turn
       if (ctx.currentPlayer !== ctx.playerID) {
          return G;
@@ -53,7 +60,8 @@ const Hajs = Game({
 
       // do not mutate G
       const playerDeck = G.players[ctx.playerID].deck;
-      const card = playerDeck[playerDeck.length - 1];
+      const cardIndex = playerDeck.findIndex(tmp => tmp.id === cardID);
+      const card = playerDeck[cardIndex];
       const players = Object.assign({}, ...Object.keys(G.players).map(key => {
          if (key === ctx.playerID) {
             // remove deck
@@ -66,7 +74,7 @@ const Hajs = Game({
             return {
                [key]: {
                   ...G.players[key],
-                  deck: playerDeck.slice(0, playerDeck.length - 1)
+                  deck: [...playerDeck.slice(0, cardIndex), ...playerDeck.slice(cardIndex + 1)]
                }
             };
          }
@@ -92,7 +100,7 @@ const Hajs = Game({
             return { 
                [key]: { 
                   ...G.players[key], 
-                  score: G.players[key].score + card,
+                  score: G.players[key].score + card.score,
                   hand : G.players[key].hand.slice(0, G.players[key].hand.length - 1)
                }
             }

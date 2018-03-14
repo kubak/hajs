@@ -7,3 +7,6 @@
   line-height: 30px;
   text-align: center;
 }
+.phases li div {
+   display: flex;
+}
