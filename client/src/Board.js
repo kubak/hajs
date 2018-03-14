@@ -45,9 +45,13 @@ class Board extends React.Component {
   };
 
    renderDeck() {
+      const deck = this.props.G.players[this.props.playerID].deck;
+      if (typeof deck === 'undefined') {
+         return;
+      }
       return (
          <li>
-            Deck: {this.props.G.deck.map((tmp) => {
+            Deck: {deck.map((tmp) => {
                return (<HajsCard key={tmp} front={tmp} />)
             })}
          </li>
@@ -55,9 +59,10 @@ class Board extends React.Component {
    };
 
    renderHand() {
+      const hand = this.props.G.players[this.props.playerID].hand;
       return (
          <li>
-            Hand: {this.props.G.players[this.props.playerID].hand.map((tmp) => {
+            Hand: {hand.map((tmp) => {
                return (<HajsCard key={tmp} front={tmp} />);
             })}
          </li>

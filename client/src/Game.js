@@ -6,7 +6,7 @@
  * https://opensource.org/licenses/MIT.
  */
 
-import { Game } from 'boardgame.io/core';
+import { Game, TurnOrder } from 'boardgame.io/core';
 //const Game = require('boardgame.io/core').Game;
 
 const Cards = [1,2,3,4,5,6];
@@ -15,20 +15,22 @@ const Hajs = Game({
   name : 'Hajs',
   
   setup: (numPlayers) => {
-    //const hands = new Array(numPlayers).fill([]);
-    //const scores = new Array(numPlayers).fill(0);
     const players = {};
+    // at least for now playerIDs are ints starting with 0 so a simple for loop will do
     for (let i = 0; i < numPlayers; i++) {
       players[i] = {
          hand : [],
          score : 0
       };
+      // give deck to the first player
+      // @todo do this with currentPlayer ?
+      if (i === 0) {
+         players[i].deck = Cards.slice();
+      }
     }
+
     const ret = { 
-      deck : Cards.slice(),
       players: players 
-      //hand : hands,
-      //score : scores
     };
     return ret;
   },
@@ -50,23 +52,30 @@ const Hajs = Game({
       }
 
       // do not mutate G
-      const card = G.deck[G.deck.length - 1];
+      const playerDeck = G.players[ctx.playerID].deck;
+      const card = playerDeck[playerDeck.length - 1];
       const players = Object.assign({}, ...Object.keys(G.players).map(key => {
          if (key === ctx.playerID) {
-            return { 
-               [key]: { 
-                  ...G.players[key], 
-                  hand: [...G.players[key].hand, card] 
+            // remove deck
+            // https://codeburst.io/use-es2015-object-rest-operator-to-omit-properties-38a3ecffe90
+            const { deck, ...player } = G.players[key];
+            player.hand =  [...G.players[key].hand, card]
+            return { [key]: player };
+         } else if (key === TurnOrder.DEFAULT.next(G, ctx)) {
+            // pass deck to the next player
+            return {
+               [key]: {
+                  ...G.players[key],
+                  deck: playerDeck.slice(0, playerDeck.length - 1)
                }
-            }
+            };
          }
          return { [key] : { ...G.players[key] } };
       }));
-      
+
       const ret = {
         ...G,
-         players : players,
-        deck: G.deck.slice(0, G.deck.length - 1)
+         players : players
       };
       return ret;
     },
@@ -103,7 +112,8 @@ const Hajs = Game({
       {
         name: 'take phase',
         endPhaseIf: (G, ctx) => {
-           return G.deck.length === 0;
+           const deck = G.players[Object.keys(G.players).find(key => typeof G.players[key].deck !== 'undefined')].deck;
+           return deck.length === 0;
         },
         allowedMoves: ['takeCard'],
         onPhaseBegin: (G, ctx) => {
@@ -127,6 +137,7 @@ const Hajs = Game({
         onPhaseEnd: (G, ctx) => G, // stub
       },
     ],
+
     endGameIf: (G) => {
       const handsLength = Object.keys(G.players).reduce((previous, current) => { 
          return previous += G.players[current].hand.length; 
@@ -147,10 +158,12 @@ const Hajs = Game({
     },
 
     endTurnIf: (G, ctx) => {
+       // this is not used right now as endTurn is called in Board
       // end turn if all players taken/played one card
+      const deck = G.players[ Object.keys(G.players).find(key => typeof G.players[key].deck !== 'undefined') ].deck;
       if (ctx.phase === 'take phase') {
-         console.log('take phase end turn', G.deck.length, '===', Cards.length - (ctx.turn + 1) * ctx.numPlayers);
-         if (G.deck.length === Cards.length - (ctx.turn + 1) * ctx.numPlayers) {
+         console.log('take phase end turn', deck.length, '===', Cards.length - (ctx.turn + 1) * ctx.numPlayers);
+         if (deck.length === Cards.length - (ctx.turn + 1) * ctx.numPlayers) {
             return true;
          }
       } else {
