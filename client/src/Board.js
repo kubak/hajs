@@ -7,7 +7,15 @@
  */
 
 import React from 'react';
+import { Card } from 'boardgame.io/ui';
 import './Board.css';
+
+
+class HajsCard extends React.Component {
+   render () {
+      return (<Card front={this.props.front} canHover={false} isFaceUp={true} />);
+   }
+};
 
 
 class Board extends React.Component {
@@ -36,7 +44,27 @@ class Board extends React.Component {
     this.props.events.endTurn();
   };
 
-  render() {
+   renderDeck() {
+      return (
+         <li>
+            Deck: {this.props.G.deck.map((tmp) => {
+               return (<HajsCard key={tmp} front={tmp} />)
+            })}
+         </li>
+      );
+   };
+
+   renderHand() {
+      return (
+         <li>
+            Hand: {this.props.G.players[this.props.playerID].hand.map((tmp) => {
+               return (<HajsCard key={tmp} front={tmp} />);
+            })}
+         </li>
+      );
+   };
+
+  render () {
    if (typeof(this.props.G.players[this.props.playerID].hand) === 'undefined') {
      debugger;
    }
@@ -49,8 +77,8 @@ class Board extends React.Component {
          <ul className="phases">
             {winner}
             <li style={{ background: '#aaa' }}>{this.props.ctx.phase}</li>
-            <li>Deck: {this.props.G.deck.length}</li>
-            <li>Hand: {this.props.G.players[this.props.playerID].hand.length}</li>
+            {this.renderDeck()}
+            {this.renderHand()}
             <li>
                <button id="take" onClick={this.takeCard} disabled={!this.props.isActive}>
                   Take Card
