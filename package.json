@@ -19,7 +19,7 @@
   "dependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "boardgame.io": "^0.20.1",
+    "boardgame.io": "^0.20.2",
     "install": "^0.10.4",
     "npm": "^5.7.1"
   },
