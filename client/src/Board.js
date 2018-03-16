@@ -12,29 +12,27 @@ class HajsCard extends React.Component {
 
 class Board extends React.Component {
 
-  takeCard = (id) => {
-    if (this.props.ctx.phase !== 'take phase') {
-      return;
-    }
+   takeCard (id) {
+      if (this.props.ctx.phase !== 'take phase') {
+         return;
+      }
       // only one card per turn
       if (this.props.playerID !== this.props.ctx.currentPlayer) {
          return;
       }
-    this.props.moves.takeCard(id);
-    this.props.events.endTurn();
-  };
+      this.props.moves.takeCard(id);
+   };
 
-  playCard = () => {
-    if (this.props.ctx.phase !== 'play phase') {
-      return;
-    }
-      // only one card per turn
-      if (this.props.playerID !== this.props.ctx.currentPlayer) {
+   playCard () {
+      if (this.props.ctx.phase !== 'play phase') {
          return;
       }
-    this.props.moves.playCard();
-    this.props.events.endTurn();
-  };
+      // only one card per turn
+      if (this.props.G.players[this.props.playerID].table !== null) {
+         return;
+      }
+      this.props.moves.playCard();
+   };
 
    renderDeck() {
       const deck = this.props.G.players[this.props.playerID].deck;
@@ -65,6 +63,18 @@ class Board extends React.Component {
       );
    };
 
+   renderTable() {
+      const table = this.props.G.players[this.props.playerID].table;
+      if (table === null) {
+         return;
+      }
+      return (
+         <li>
+            Table: <HajsCard front={table.id} />
+         </li>
+      );
+   }
+
   render () {
    if (typeof(this.props.G.players[this.props.playerID].hand) === 'undefined') {
      debugger;
@@ -73,13 +83,16 @@ class Board extends React.Component {
     if (typeof this.props.ctx.gameover !== 'undefined' && typeof this.props.ctx.gameover[this.props.playerID] !== 'undefined') {
       winner = <li>Winner !</li>;
     }
+    const score = this.props.G.players[this.props.playerID].score;
     return (
       <div>
          <ul className="phases">
             {winner}
             <li style={{ background: '#aaa' }}>{this.props.ctx.phase}</li>
+            <li>Score: {score}</li>
             {this.renderDeck()}
             {this.renderHand()}
+            {this.renderTable()}
             <li>
                <button id="play" onClick={this.playCard} disabled={!this.props.isActive}>
                   Play Card
