@@ -17,13 +17,14 @@ class Board extends React.Component {
          return;
       }
       // only one card per turn
-      if (this.props.playerID !== this.props.ctx.currentPlayer) {
+      if (this.props.G.players[this.props.playerID].hand.length !== this.props.ctx.turn) {
+         console.log(this.props.G.players[this.props.playerID].hand.length, '!==', this.props.ctx.turn + 1);
          return;
       }
       this.props.moves.takeCard(id);
    };
 
-   playCard () {
+   playCard (id) {
       if (this.props.ctx.phase !== 'play phase') {
          return;
       }
@@ -31,7 +32,7 @@ class Board extends React.Component {
       if (this.props.G.players[this.props.playerID].table !== null) {
          return;
       }
-      this.props.moves.playCard();
+      this.props.moves.playCard(id);
    };
 
    renderDeck() {
@@ -57,7 +58,11 @@ class Board extends React.Component {
       return (
          <li>
             Hand: {hand.map((tmp) => {
-               return (<HajsCard key={tmp.id} front={tmp.id} />);
+               return (
+                  <div key={tmp.id} onClick={() => this.playCard(tmp.id)}>
+                     <HajsCard key={tmp.id} front={tmp.id} />
+                  </div>
+               );
             })}
          </li>
       );
@@ -93,11 +98,6 @@ class Board extends React.Component {
             {this.renderDeck()}
             {this.renderHand()}
             {this.renderTable()}
-            <li>
-               <button id="play" onClick={this.playCard} disabled={!this.props.isActive}>
-                  Play Card
-               </button>
-            </li>
          </ul>
       </div>
     );
