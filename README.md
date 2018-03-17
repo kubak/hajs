@@ -1,7 +1,7 @@
 ## HAJS ##
 a card game
 
-### how to run (yeah it sucks ###
+### how to run (yeah it sucks) ###
 
 #### server (dev mode only for now) ####
 ```bash
