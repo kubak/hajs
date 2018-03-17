@@ -23,7 +23,7 @@ const Hajs = Game({
          hand : [],
          display : [],
          score : 0,
-         table : null
+         table : []
       };
       // divide deck between players
       players[i].deck = deck.slice(i * CardsPerPlayer, i * CardsPerPlayer + CardsPerPlayer);
@@ -72,7 +72,7 @@ const Hajs = Game({
     },
     playCard: (G, ctx, cardID) => {
       // only allow playing one card per turn
-      if (G.players[ctx.playerID].table !== null) {
+      if (G.players[ctx.playerID].table.length > 0) {
          return G;
       }
 
@@ -86,7 +86,7 @@ const Hajs = Game({
                [key]: { 
                   ...G.players[key], 
                   //score: G.players[key].score + card.score,
-                  table: card,
+                  table: [card],
                   hand: [...playerHand.slice(0, cardIndex), ...playerHand.slice(cardIndex + 1)]
                }
             }
@@ -158,7 +158,7 @@ const Hajs = Game({
          endTurnIf: (G, ctx) => {
             // all players placed a card on the table
             const TableLength = Object.keys(G.players).reduce((previous, current) => {
-               if (G.players[current].table !== null) {
+               if (G.players[current].table.length > 0) {
                   return previous + 1;
                }
                return previous;
@@ -175,8 +175,8 @@ const Hajs = Game({
                const player = G.players[key];
                return {
                   ...player,
-                  display: [...player.display, { ...player.table }],
-                  table: null
+                  display: [...player.display].concat(player.table),
+                  table: []
                };
             });
             return { 
@@ -195,7 +195,7 @@ const Hajs = Game({
          return previous + G.players[current].hand.length;
       }, 0);
       const TablesLength = Object.keys(G.players).reduce((previous, current) => {
-         if (G.players[current].table !== null) {
+         if (G.players[current].table.length > 0) {
             return previous + 1;
          }
          return previous;

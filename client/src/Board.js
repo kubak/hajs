@@ -29,7 +29,7 @@ class Board extends React.Component {
          return;
       }
       // only one card per turn
-      if (this.props.G.players[this.props.playerID].table !== null) {
+      if (this.props.G.players[this.props.playerID].table.length > 0) {
          return;
       }
       this.props.moves.playCard(id);
@@ -70,12 +70,11 @@ class Board extends React.Component {
 
    renderTable() {
       const table = this.props.G.players[this.props.playerID].table;
-      if (table === null) {
-         return;
-      }
       return (
          <li>
-            Table: <HajsCard front={table.id} />
+            Table: {table.map(tmp => {
+               return (<HajsCard key={tmp.id} front={tmp.id} />);
+            })}
          </li>
       );
    }
