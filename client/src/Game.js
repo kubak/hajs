@@ -21,6 +21,7 @@ const Hajs = Game({
     for (let i = 0; i < ctx.numPlayers; i++) {
       players[i] = {
          hand : [],
+         display : [],
          score : 0,
          table : null
       };
@@ -148,7 +149,7 @@ const Hajs = Game({
         turnOrder: TurnOrder.ANY,
         endPhaseIf: (G) => {
          const handsLength = Object.keys(G.players).reduce((previous, current) => {
-            return previous += G.players[current].hand.length;
+            return previous + G.players[current].hand.length;
          }, 0);
          return handsLength === 0;
         },
@@ -174,7 +175,7 @@ const Hajs = Game({
                const player = G.players[key];
                return {
                   ...player,
-                  score: player.score + player.table.score,
+                  display: [...player.display, { ...player.table }],
                   table: null
                };
             });
@@ -191,17 +192,37 @@ const Hajs = Game({
          return;
        }
       const handsLength = Object.keys(G.players).reduce((previous, current) => { 
-         return previous += G.players[current].hand.length; 
+         return previous + G.players[current].hand.length;
       }, 0);
-      if (handsLength === 0) {
+      const TablesLength = Object.keys(G.players).reduce((previous, current) => {
+         if (G.players[current].table !== null) {
+            return previous + 1;
+         }
+         return previous;
+      }, 0);
+      if (handsLength === 0 && TablesLength === 0) {
+         // add scores for all cards on player's display
+         const players = Object.assign({}, ...Object.keys(G.players).map((key) => {
+            const score = G.players[key].display.reduce((previous, current) => {
+               return previous + current.score;
+            }, 0);
+            return {
+               [key] : {
+                  ...G.players[key],
+                  score: score,
+                  display: []
+               }
+            };
+         }));
+         // find winner
          let winner = {};
          let maxScore = 0;
-         Object.keys(G.players).forEach((key) => {
-            if (G.players[key].score > maxScore) { // one winner
-               maxScore = G.players[key].score;
-               winner = { [key] : G.players[key].score };
-            } else if (G.players[key].score === maxScore) { // draw
-               winner.key = G.players[key].score;
+         Object.keys(players).forEach((key) => {
+            if (players[key].score > maxScore) { // one winner
+               maxScore = players[key].score;
+               winner = { [key] : players[key].score };
+            } else if (players[key].score === maxScore) { // draw
+               winner.key = players[key].score;
             }
          });
          return winner;

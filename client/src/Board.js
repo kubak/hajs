@@ -80,6 +80,17 @@ class Board extends React.Component {
       );
    }
 
+   renderDisplay() {
+      const display = this.props.G.players[this.props.playerID].display;
+      return (
+         <li>
+            Display: {display.map((tmp) => {
+               return (<HajsCard key={tmp.id} front={tmp.id} />);
+            })}
+         </li>
+      );
+   }
+
   render () {
    if (typeof(this.props.G.players[this.props.playerID].hand) === 'undefined') {
      debugger;
@@ -98,6 +109,7 @@ class Board extends React.Component {
             {this.renderDeck()}
             {this.renderHand()}
             {this.renderTable()}
+            {this.renderDisplay()}
          </ul>
       </div>
     );
