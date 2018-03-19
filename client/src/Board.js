@@ -45,7 +45,7 @@ class Board extends React.Component {
             Deck: {deck.map((tmp) => {
                return (
                   <div key={tmp.id} onClick={() => this.takeCard(tmp.id)}>
-                     <HajsCard key={tmp.id} front={tmp.id} />
+                     <HajsCard key={tmp.id} front={tmp.name} />
                   </div>
                );
             })}
@@ -60,7 +60,7 @@ class Board extends React.Component {
             Hand: {hand.map((tmp) => {
                return (
                   <div key={tmp.id} onClick={() => this.playCard(tmp.id)}>
-                     <HajsCard key={tmp.id} front={tmp.id} />
+                     <HajsCard key={tmp.id} front={tmp.name} />
                   </div>
                );
             })}
@@ -73,7 +73,7 @@ class Board extends React.Component {
       if (table === null) {
          return;
       }
-      return (<li>Table: <HajsCard front={table.id} /></li>);
+      return (<li>Table: <HajsCard front={table.name} /></li>);
    }
 
    renderDisplay() {
@@ -81,7 +81,7 @@ class Board extends React.Component {
       return (
          <li>
             Display: {display.map((tmp) => {
-               return (<HajsCard key={tmp.id} front={tmp.id} />);
+               return (<HajsCard key={tmp.id} front={tmp.name} />);
             })}
          </li>
       );

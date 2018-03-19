@@ -1,16 +1,107 @@
 import { Game, TurnOrder } from 'boardgame.io/core';
 
 const Cards = [
-   { id : 1, action : (player) => { player.score += 1; }, order: 1 },
-   { id : 2, action : (player) => { player.score += 2; }, order: 2 },
-   { id : 3, action : (player) => { player.score += 3; }, order: 3 },
-   { id : 4, action : (player) => { player.score += 4; }, order: 4 },
-   { id : 5, action : (player) => { player.score += 5; }, order: 5 },
-   { id : 6, action : (player) => { player.score += 6; }, order: 6 },
-   { id : 7, action : (player) => { player.score += 7; }, order: 7 },
-   { id : 8, action : (player) => { player.score += 8; }, order: 8 },
-   { id : 9, action : (player) => { player.score += 9; }, order: 9 },
-   { id : 10, action : (player) => { player.score += 10; }, order: 10 }
+   {
+      id : 1,
+      name: 'one',
+      action : (player) => {
+         return {
+            ...player,
+            score: player.score + 1
+         };
+      },
+      order: 1
+   }, {
+      id : 2,
+      name: 'minus two',
+      action : (player) => {
+         return {
+            ...player,
+            score: Math.max(player.score - 2, 0)
+         };
+      },
+      order: 2
+   }, {
+      id : 3,
+      name: 'minus three',
+      action : (player) => {
+         return {
+            ...player,
+            score: Math.max(player.score - 3, 0)
+         };
+      },
+      order: 3
+   }, {
+      id : 4,
+      name: 'four',
+      action : (player) => {
+         return {
+            ...player,
+            score: player.score + 4
+         };
+      },
+      order: 4
+   }, {
+      id : 5,
+      name: 'half',
+      action : (player) => {
+         return {
+            ...player,
+            score: Math.ceil(player.score / 5)
+         };
+      },
+      order: 5
+   }, {
+      id : 6,
+      name: 'six',
+      action : (player) => {
+         return {
+            ...player,
+            score: player.score + 6
+         };
+      },
+      order: 6
+   }, {
+      id : 7,
+      name: 'double',
+      action : (player) => {
+         return {
+            ...player,
+            score: player.score * 2
+         };
+      },
+      order: 7
+   }, {
+      id : 8,
+      name: 'minus eight',
+      action : (player) => {
+         return {
+            ...player,
+            score: Math.max(player.score - 8, 0)
+         };
+      },
+      order: 8
+   }, {
+      id : 9,
+      name: 'nine',
+      action : (player) => {
+         return {
+            ...player,
+            score: player.score + 9
+         };
+      },
+      order: 9
+   }, {
+      id : 10,
+      name: 'ten',
+      action : (player) => {
+         return {
+            ...player,
+            score: player.score + 10
+         };
+      },
+      order: 10
+   }
 ];
 
 const TakeTurns = 2;
@@ -207,9 +298,9 @@ const Hajs = Game({
             });
             // move cards from table to display, move nextDeck to deck for all players, set cardTaken and cardPlayed to false
             players = Object.keys(players).map(key => {
-               const { nextDeck, ...player } = G.players[key];
+               let { nextDeck, ...player } = G.players[key];
                // run cards action
-               player.table.action(player);
+               player = player.table.action(player);
                return {
                   ...player,
                   display: [...player.display, player.table],
