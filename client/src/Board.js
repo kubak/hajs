@@ -13,12 +13,8 @@ class HajsCard extends React.Component {
 class Board extends React.Component {
 
    takeCard (id) {
-      if (this.props.ctx.phase !== 'take phase') {
-         return;
-      }
       // only one card per turn
-      if (this.props.G.players[this.props.playerID].hand.length !== this.props.ctx.turn) {
-         console.log(this.props.G.players[this.props.playerID].hand.length, '!==', this.props.ctx.turn + 1);
+      if (this.props.G.players[this.props.playerID].cardTaken) {
          return;
       }
       this.props.moves.takeCard(id);
@@ -28,8 +24,12 @@ class Board extends React.Component {
       if (this.props.ctx.phase !== 'play phase') {
          return;
       }
+      // need to take card first
+      if (!this.props.G.players[this.props.playerID].cardTaken) {
+         return;
+      }
       // only one card per turn
-      if (this.props.G.players[this.props.playerID].table.length > 0) {
+      if (this.props.G.players[this.props.playerID].cardPlayed) {
          return;
       }
       this.props.moves.playCard(id);
