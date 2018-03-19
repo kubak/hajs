@@ -1,16 +1,16 @@
 import { Game, TurnOrder } from 'boardgame.io/core';
 
 const Cards = [
-   { id : 1, score : 1 },
-   { id : 2, score : 2 },
-   { id : 3, score : 3 },
-   { id : 4, score : 4 },
-   { id : 5, score : 5 },
-   { id : 6, score : 6 },
-   { id : 7, score : 7 },
-   { id : 8, score : 8 },
-   { id : 9, score : 9 },
-   { id : 10, score : 10 }
+   { id : 1, action : (player) => { player.score += 1; }, order: 1 },
+   { id : 2, action : (player) => { player.score += 2; }, order: 2 },
+   { id : 3, action : (player) => { player.score += 3; }, order: 3 },
+   { id : 4, action : (player) => { player.score += 4; }, order: 4 },
+   { id : 5, action : (player) => { player.score += 5; }, order: 5 },
+   { id : 6, action : (player) => { player.score += 6; }, order: 6 },
+   { id : 7, action : (player) => { player.score += 7; }, order: 7 },
+   { id : 8, action : (player) => { player.score += 8; }, order: 8 },
+   { id : 9, action : (player) => { player.score += 9; }, order: 9 },
+   { id : 10, action : (player) => { player.score += 10; }, order: 10 }
 ];
 
 const TakeTurns = 2;
@@ -28,7 +28,7 @@ const Hajs = Game({
          hand : [],
          display : [],
          score : 0,
-         table : [],
+         table : null,
          cardPlayed: false,
          cardTaken: false
       };
@@ -97,7 +97,7 @@ const Hajs = Game({
             return {
                [key]: {
                   ...G.players[key],
-                  table: [card],
+                  table: card,
                   hand: [...playerHand.slice(0, cardIndex), ...playerHand.slice(cardIndex + 1)],
                   cardPlayed: true
                }
@@ -195,14 +195,26 @@ const Hajs = Game({
             return false;
          },
          onTurnEnd: (G, ctx) => {
-            // play all players cards, move nextDeck to deck for all players, set cardTaken and cardPlayed to false
-            const players = Object.keys(G.players).map(key => {
+            // play all players cards in the order of order
+            let players = Object.keys(G.players).map(key => {
+               return G.players[key];
+            });
+            players = players.sort((previous, current) => {
+               if (previous.table.order < current.table.order) {
+                  return -1;
+               }
+               return 1; // order property is unique to each card
+            });
+            // move cards from table to display, move nextDeck to deck for all players, set cardTaken and cardPlayed to false
+            players = Object.keys(players).map(key => {
                const { nextDeck, ...player } = G.players[key];
+               // run cards action
+               player.table.action(player);
                return {
                   ...player,
-                  display: [...player.display, ...player.table],
+                  display: [...player.display, player.table],
                   deck: [...G.players[key].nextDeck],
-                  table: [],
+                  table: null,
                   cardTaken: false,
                   cardPlayed: false
                };
@@ -220,12 +232,13 @@ const Hajs = Game({
          return;
        }
       const TablesLength = Object.keys(G.players).reduce((previous, current) => {
-         if (G.players[current].table.length > 0) {
+         if (G.players[current].table !== null) {
             return previous + 1;
          }
          return previous;
       }, 0);
       if (ctx.turn === TotalTurns && TablesLength === 0) {
+         /*
          // add scores for all cards on player's display
          const players = Object.assign({}, ...Object.keys(G.players).map((key) => {
             const score = G.players[key].display.reduce((previous, current) => {
@@ -239,9 +252,11 @@ const Hajs = Game({
                }
             };
          }));
+         */
          // find winner
          let winner = {};
          let maxScore = 0;
+         const players = G.players;
          Object.keys(players).forEach((key) => {
             if (players[key].score > maxScore) { // one winner
                maxScore = players[key].score;

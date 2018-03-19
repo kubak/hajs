@@ -70,13 +70,10 @@ class Board extends React.Component {
 
    renderTable() {
       const table = this.props.G.players[this.props.playerID].table;
-      return (
-         <li>
-            Table: {table.map(tmp => {
-               return (<HajsCard key={tmp.id} front={tmp.id} />);
-            })}
-         </li>
-      );
+      if (table === null) {
+         return;
+      }
+      return (<li>Table: <HajsCard front={table.id} /></li>);
    }
 
    renderDisplay() {
