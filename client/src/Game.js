@@ -13,8 +13,8 @@ const Cards = [
    { id : 10, score : 10 }
 ];
 
-const CardsPerPlayer = 3;
-const TurnsPerGame = 5;
+const TakeTurns = 2;
+const TotalTurns = 5;
 
 const Hajs = Game({
   name : 'Hajs',
@@ -33,7 +33,7 @@ const Hajs = Game({
          cardTaken: false
       };
       // divide deck between players
-      players[i].deck = deck.slice(i * TurnsPerGame, i * TurnsPerGame + TurnsPerGame);
+      players[i].deck = deck.slice(i * TotalTurns, i * TotalTurns + TotalTurns);
     }
 
     const ret = { 
@@ -120,13 +120,13 @@ const Hajs = Game({
         allowedMoves: ['takeCard'],
         turnOrder: TurnOrder.ANY,
          endPhaseIf: (G, ctx) => {
-            // end after (cardsPerPlayer - 1) moves
+            // end after TakeTurns moves
             //return ctx.turn === 1; // will this work ?
             //this will work
             const HandsLength = Object.keys(G.players).reduce((previous, current) => {
                return previous + G.players[current].hand.length;
             }, 0);
-            return HandsLength === ctx.numPlayers * (CardsPerPlayer - 1);
+            return HandsLength === ctx.numPlayers * TakeTurns;
          },
         onPhaseBegin: (G, ctx) => {
           // this fires once for every player... 
@@ -171,7 +171,7 @@ const Hajs = Game({
         allowedMoves: ['takeCard', 'playCard'],
         turnOrder: TurnOrder.ANY,
          endPhaseIf: (G, ctx) => {
-            return ctx.turn === TurnsPerGame;
+            return ctx.turn === TotalTurns;
          },
          onPhaseBegin: (G, ctx) => {
             return G;
@@ -225,7 +225,7 @@ const Hajs = Game({
          }
          return previous;
       }, 0);
-      if (ctx.turn === TurnsPerGame && TablesLength === 0) {
+      if (ctx.turn === TotalTurns && TablesLength === 0) {
          // add scores for all cards on player's display
          const players = Object.assign({}, ...Object.keys(G.players).map((key) => {
             const score = G.players[key].display.reduce((previous, current) => {
