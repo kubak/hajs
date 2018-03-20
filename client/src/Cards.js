@@ -206,6 +206,28 @@ const Cards = [
          };
       },
       order: 10
+   }, {
+      id : 11,
+      name: 'take card from stack',
+      action : (G, ctx, playerID) => {
+         const players = Object.assign({}, ...Object.keys(G.players).map(key => {
+            if (key === playerID) {
+               return {
+                  [key]: {
+                     ...G.players[key],
+                     hand: [...G.players[key].hand, ...G.stack.slice(G.stack.length - 1)]
+                  }
+               };
+            }
+            return {[key]: { ...G.players[key] } };
+         }));
+         return {
+            ...G,
+            players,
+            stack: G.stack.slice(0, G.stack.length - 1)
+         };
+      },
+      order: 11
    }
 ];
 
