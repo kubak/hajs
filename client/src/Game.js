@@ -1,8 +1,8 @@
 import { Game, TurnOrder } from 'boardgame.io/core';
 import Cards from './Cards';
 
-const TakeTurns = 2;
-const TotalTurns = 5;
+const TakeTurns = 1;
+const TotalTurns = 3;
 
 const Hajs = Game({
   name : 'Hajs',
@@ -25,7 +25,8 @@ const Hajs = Game({
     }
 
     const ret = { 
-      players: players 
+      players: players,
+      stack: deck.slice(TotalTurns * ctx.numPlayers)
     };
     return ret;
   },
