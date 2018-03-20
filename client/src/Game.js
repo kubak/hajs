@@ -4,100 +4,207 @@ const Cards = [
    {
       id : 1,
       name: 'one',
-      action : (player) => {
+      action : (G, ctx, playerID) => {
+         const players = Object.assign({}, ...Object.keys(G.players).map(key => {
+            if (key === playerID) {
+               return {
+                  [key]: {
+                     ...G.players[key],
+                     score: G.players[key].score + 1
+                  }
+               };
+            }
+            return {[key]: { ...G.players[key] } };
+         }));
          return {
-            ...player,
-            score: player.score + 1
+            ...G,
+            players
          };
       },
       order: 1
    }, {
       id : 2,
       name: 'minus two',
-      action : (player) => {
+      action : (G, ctx, playerID) => {
+         const players = Object.assign({}, ...Object.keys(G.players).map(key => {
+            if (key === playerID) {
+               return {
+                  [key]: {
+                     ...G.players[key],
+                     score: Math.max(G.players[key].score - 2, 0)
+                  }
+               };
+            }
+            return {[key]: { ...G.players[key] } };
+         }));
          return {
-            ...player,
-            score: Math.max(player.score - 2, 0)
+            ...G,
+            players
          };
       },
       order: 2
    }, {
       id : 3,
-      name: 'minus three',
-      action : (player) => {
+      name: 'three for everyone',
+      action : (G, ctx, playerID) => {
+         const players = Object.assign({}, ...Object.keys(G.players).map(key => {
+            return {
+               [key]: {
+                  ...G.players[key],
+                  score: G.players[key].score + 3
+               }
+            };
+         }));
          return {
-            ...player,
-            score: Math.max(player.score - 3, 0)
+            ...G,
+            players
          };
       },
       order: 3
    }, {
       id : 4,
       name: 'four',
-      action : (player) => {
+      action : (G, ctx, playerID) => {
+         const players = Object.assign({}, ...Object.keys(G.players).map(key => {
+            if (key === playerID) {
+               return {
+                  [key]: {
+                     ...G.players[key],
+                     score: G.players[key].score + 4
+                  }
+               };
+            }
+            return {[key]: { ...G.players[key] } };
+         }));
          return {
-            ...player,
-            score: player.score + 4
+            ...G,
+            players
          };
       },
       order: 4
    }, {
       id : 5,
       name: 'half',
-      action : (player) => {
+      action : (G, ctx, playerID) => {
+         const players = Object.assign({}, ...Object.keys(G.players).map(key => {
+            if (key === playerID) {
+               return {
+                  [key]: {
+                     ...G.players[key],
+                     score: Math.ceil(G.players[key].score / 2)
+                  }
+               };
+            }
+            return {[key]: { ...G.players[key] } };
+         }));
          return {
-            ...player,
-            score: Math.ceil(player.score / 5)
+            ...G,
+            players
          };
       },
       order: 5
    }, {
       id : 6,
       name: 'six',
-      action : (player) => {
+      action : (G, ctx, playerID) => {
+         const players = Object.assign({}, ...Object.keys(G.players).map(key => {
+            if (key === playerID) {
+               return {
+                  [key]: {
+                     ...G.players[key],
+                     score: G.players[key].score + 6
+                  }
+               };
+            }
+            return {[key]: { ...G.players[key] } };
+         }));
          return {
-            ...player,
-            score: player.score + 6
+            ...G,
+            players
          };
       },
       order: 6
    }, {
       id : 7,
       name: 'double',
-      action : (player) => {
+      action : (G, ctx, playerID) => {
+         const players = Object.assign({}, ...Object.keys(G.players).map(key => {
+            if (key === playerID) {
+               return {
+                  [key]: {
+                     ...G.players[key],
+                     score: G.players[key].score * 2
+                  }
+               };
+            }
+            return {[key]: { ...G.players[key] } };
+         }));
          return {
-            ...player,
-            score: player.score * 2
+            ...G,
+            players
          };
       },
       order: 7
    }, {
       id : 8,
       name: 'minus eight',
-      action : (player) => {
+      action : (G, ctx, playerID) => {
+         const players = Object.assign({}, ...Object.keys(G.players).map(key => {
+            if (key === playerID) {
+               return {
+                  [key]: {
+                     ...G.players[key],
+                     score: Math.max(G.players[key].score - 8, 0)
+                  }
+               };
+            }
+            return {[key]: { ...G.players[key] } };
+         }));
          return {
-            ...player,
-            score: Math.max(player.score - 8, 0)
+            ...G,
+            players
          };
       },
       order: 8
    }, {
       id : 9,
       name: 'nine',
-      action : (player) => {
+      action : (G, ctx, playerID) => {
+         const players = Object.assign({}, ...Object.keys(G.players).map(key => {
+            if (key === playerID) {
+               return {
+                  [key]: {
+                     ...G.players[key],
+                     score: G.players[key].score + 9
+                  }
+               };
+            }
+            return {[key]: { ...G.players[key] } };
+         }));
          return {
-            ...player,
-            score: player.score + 9
+            ...G,
+            players
          };
       },
       order: 9
    }, {
       id : 10,
       name: 'ten',
-      action : (player) => {
+      action : (G, ctx, playerID) => {
+         const players = Object.assign({}, ...Object.keys(G.players).map(key => {
+            if (key === playerID) {
+               return {
+                  [key]: {
+                     ...G.players[key],
+                     score: G.players[key].score + 10
+                  }
+               };
+            }
+            return {[key]: { ...G.players[key] } };
+         }));
          return {
-            ...player,
-            score: player.score + 10
+            ...G,
+            players
          };
       },
       order: 10
@@ -164,8 +271,8 @@ const Hajs = Game({
       }));
 
       const ret = {
-        ...G,
-         players : players
+         ...G,
+         players
       };
       return ret;
     },
@@ -198,7 +305,7 @@ const Hajs = Game({
       }));
       const Ret = {
          ...G,
-         players: players
+         players
       };
       return Ret;
     },
@@ -252,7 +359,7 @@ const Hajs = Game({
             }));
             const Ret = {
                ...G,
-               players: players
+               players
             };
             return Ret;
          }
@@ -288,7 +395,10 @@ const Hajs = Game({
          onTurnEnd: (G, ctx) => {
             // play all players cards in the order of order
             let players = Object.keys(G.players).map(key => {
-               return G.players[key];
+               return {
+                  ...G.players[key],
+                  playerID: key
+               };
             });
             players = players.sort((previous, current) => {
                if (previous.table.order < current.table.order) {
@@ -296,22 +406,28 @@ const Hajs = Game({
                }
                return 1; // order property is unique to each card
             });
-            // move cards from table to display, move nextDeck to deck for all players, set cardTaken and cardPlayed to false
-            players = Object.keys(players).map(key => {
-               let { nextDeck, ...player } = G.players[key];
+            let ret = { ...G };
+            players.forEach(tmp => {
                // run cards action
-               player = player.table.action(player);
-               return {
-                  ...player,
-                  display: [...player.display, player.table],
-                  deck: [...G.players[key].nextDeck],
-                  table: null,
-                  cardTaken: false,
-                  cardPlayed: false
-               };
+               ret = ret.players[tmp.playerID].table.action(ret, ctx, tmp.playerID);
             });
+            // move cards from table to display, move nextDeck to deck for all players, set cardTaken and cardPlayed to false
+            players = Object.assign({}, ...Object.keys(ret.players).map(key => {
+               let { nextDeck, ...player } = ret.players[key];
+
+               return {
+                  [key]: {
+                     ...player,
+                     display: [...player.display, player.table],
+                     deck: [...ret.players[key].nextDeck],
+                     table: null,
+                     cardTaken: false,
+                     cardPlayed: false
+                  }
+               };
+            }));
             return { 
-               ...G,
+               ...ret,
                players
             };
          }
