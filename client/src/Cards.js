@@ -209,7 +209,7 @@ const Cards = [
    }, {
       id : 11,
       name: 'take card from stack',
-      action : (G, ctx, playerID) => {
+      action: (G, ctx, playerID) => {
          const players = Object.assign({}, ...Object.keys(G.players).map(key => {
             if (key === playerID) {
                return {
@@ -228,6 +228,44 @@ const Cards = [
          };
       },
       order: 11
+   }, {
+        id: 12,
+        name: 'loose chosen card',
+        action: (G, ctx, playerID) => {
+            const playerMoves = Object.assign({}, ...Object.keys(G.playerMoves).map(key => {
+                if (key === playerID) {
+                    return {
+                        [key]: [ ...G.playerMoves[key], 'looseCard' ]
+                    };
+                }
+                return { [key]: [ ...G.playerMoves[key] ] };
+            }));
+            return {
+                ...G,
+                playerMoves
+            };
+        },
+       order: 12,
+       stopping: true
+   }, {
+        id: 13,
+        name: 'other players loose chosen card',
+        action: (G, ctx, playerID) => {
+            const playerMoves = Object.assign({}, ...Object.keys(G.playerMoves).map(key => {
+                if (key !== playerID) {
+                    return {
+                        [key]: [ ...G.playerMoves[key], 'looseCard' ]
+                    };
+                }
+                return { [key]: [ ...G.playerMoves[key] ] };
+            }));
+            return {
+                ...G,
+                playerMoves
+            };
+        },
+        order: 13,
+        stopping: true
    }
 ];
 

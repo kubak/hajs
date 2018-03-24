@@ -35,9 +35,16 @@ class Board extends React.Component {
       this.props.moves.playCard(id);
    };
 
+   looseCard(id) {
+    if (this.props.ctx.phase !== 'action phase') {
+      return;
+    }
+    this.props.moves.looseCard(id);
+   };
+
    renderDeck() {
       const deck = this.props.G.players[this.props.playerID].deck;
-      if (typeof deck === 'undefined') {
+      if (typeof deck === 'undefined' || this.props.ctx.phase === 'action phase') {
          return;
       }
       return (
@@ -59,7 +66,8 @@ class Board extends React.Component {
          <li>
             Hand: {hand.map((tmp) => {
                return (
-                  <div key={tmp.id} onClick={() => this.playCard(tmp.id)}>
+                  <div key={tmp.id}
+                    onClick={this.props.ctx.phase === 'play phase' ? () => this.playCard(tmp.id) : () => this.looseCard(tmp.id)}>
                      <HajsCard key={tmp.id} front={tmp.name} />
                   </div>
                );
