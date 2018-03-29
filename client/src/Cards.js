@@ -1,86 +1,81 @@
 const Cards = [
-   {
-      id : 1,
-      name: 'one',
-      action : (G, ctx, playerID) => {
-         const players = Object.assign({}, ...Object.keys(G.players).map(key => {
-            if (key === playerID) {
-               return {
-                  [key]: {
-                     ...G.players[key],
-                     score: G.players[key].score + 1
-                  }
-               };
-            }
-            return {[key]: { ...G.players[key] } };
-         }));
-         return {
-            ...G,
-            players
-         };
-      },
-      order: 1
-   }, {
-      id : 2,
-      name: 'minus two',
-      action : (G, ctx, playerID) => {
-         const players = Object.assign({}, ...Object.keys(G.players).map(key => {
-            if (key === playerID) {
-               return {
-                  [key]: {
-                     ...G.players[key],
-                     score: Math.max(G.players[key].score - 2, 0)
-                  }
-               };
-            }
-            return {[key]: { ...G.players[key] } };
-         }));
-         return {
-            ...G,
-            players
-         };
-      },
-      order: 2
-   }, {
-      id : 3,
-      name: 'three for everyone',
-      action : (G, ctx, playerID) => {
-         const players = Object.assign({}, ...Object.keys(G.players).map(key => {
+    {
+        id : 1,
+        name: 'three for everyone',
+        action : (G, ctx, playerID) => {
+            const players = Object.assign({}, ...Object.keys(G.players).map(key => {
+                return {
+                    [key]: {
+                        ...G.players[key],
+                        score: G.players[key].score + 3
+                    }
+                };
+            }));
             return {
-               [key]: {
-                  ...G.players[key],
-                  score: G.players[key].score + 3
-               }
+                ...G,
+                players
             };
-         }));
-         return {
-            ...G,
-            players
-         };
-      },
-      order: 3
-   }, {
-      id : 4,
-      name: 'four',
-      action : (G, ctx, playerID) => {
-         const players = Object.assign({}, ...Object.keys(G.players).map(key => {
-            if (key === playerID) {
-               return {
-                  [key]: {
-                     ...G.players[key],
-                     score: G.players[key].score + 4
-                  }
-               };
-            }
-            return {[key]: { ...G.players[key] } };
-         }));
-         return {
-            ...G,
-            players
-         };
-      },
-      order: 4
-   }, {
+        },
+        order: 1
+    }, {
+        id : 2,
+        name: 'four',
+        action : (G, ctx, playerID) => {
+            const players = Object.assign({}, ...Object.keys(G.players).map(key => {
+                if (key === playerID) {
+                    return {
+                        [key]: {
+                            ...G.players[key],
+                            score: G.players[key].score + 4
+                        }
+                    };
+                }
+                return {[key]: { ...G.players[key] } };
+            }));
+            return {
+                ...G,
+                players
+            };
+        },
+        order: 2
+    }, {
+        id: 3,
+        name: 'other players loose chosen card',
+        action: (G, ctx, playerID) => {
+            const playerMoves = Object.assign({}, ...Object.keys(G.playerMoves).map(key => {
+                if (key !== playerID) {
+                    return {
+                        [key]: [ ...G.playerMoves[key], 'looseCard' ]
+                    };
+                }
+                return { [key]: [ ...G.playerMoves[key] ] };
+            }));
+            return {
+                ...G,
+                playerMoves
+            };
+        },
+        order: 3,
+        stopping: true
+    }, {
+        id: 4,
+        name: 'at the end of next round all players loose chosen card',
+        action: (G, ctx, playerID) => {
+            const nextRoundPlayerMoves = Object.assign({}, ...Object.keys(G.nextRound.playerMoves).map(key => {
+                return {
+                    [key]: [ ...G.nextRound.playerMoves[key], 'looseCard' ]
+                };
+            }));
+            return {
+                ...G,
+                nextRound: {
+                    playerMoves: nextRoundPlayerMoves
+                }
+            };
+        },
+        order: 4,
+        stopping: false
+    }, {
       id : 5,
       name: 'half',
       action : (G, ctx, playerID) => {
@@ -248,25 +243,48 @@ const Cards = [
        order: 12,
        stopping: true
    }, {
-        id: 13,
-        name: 'other players loose chosen card',
-        action: (G, ctx, playerID) => {
-            const playerMoves = Object.assign({}, ...Object.keys(G.playerMoves).map(key => {
-                if (key !== playerID) {
-                    return {
-                        [key]: [ ...G.playerMoves[key], 'looseCard' ]
-                    };
+    id : 13,
+    name: 'one',
+    action : (G, ctx, playerID) => {
+       const players = Object.assign({}, ...Object.keys(G.players).map(key => {
+          if (key === playerID) {
+             return {
+                [key]: {
+                   ...G.players[key],
+                   score: G.players[key].score + 1
                 }
-                return { [key]: [ ...G.playerMoves[key] ] };
-            }));
-            return {
-                ...G,
-                playerMoves
-            };
-        },
-        order: 13,
-        stopping: true
-   }
+             };
+          }
+          return {[key]: { ...G.players[key] } };
+       }));
+       return {
+          ...G,
+          players
+       };
+    },
+    order: 13
+ }, {
+    id : 14,
+    name: 'minus two',
+    action : (G, ctx, playerID) => {
+       const players = Object.assign({}, ...Object.keys(G.players).map(key => {
+          if (key === playerID) {
+             return {
+                [key]: {
+                   ...G.players[key],
+                   score: Math.max(G.players[key].score - 2, 0)
+                }
+             };
+          }
+          return {[key]: { ...G.players[key] } };
+       }));
+       return {
+          ...G,
+          players
+       };
+    },
+    order: 14
+ }
 ];
 
 export default Cards;

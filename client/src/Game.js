@@ -6,12 +6,15 @@ const TotalTurns = 5;
 
 const Hajs = Game({
   name : 'Hajs',
-  seed: 2,
+  seed: 1,
   setup: (ctx) => {
     console.log('setup');
     const players = {};
     const deck = ctx.random.Shuffle(Cards); // shuffle cards
     const playerMoves = {};
+    const nextRound = {
+      playerMoves: {}
+    };
     // at least for now playerIDs are ints starting with 0 so a simple for loop will do
     for (let i = 0; i < ctx.numPlayers; i++) {
       players[i] = {
@@ -27,11 +30,13 @@ const Hajs = Game({
       players[i].deck = deck.slice(i * TotalTurns, i * TotalTurns + TotalTurns);
       // create playerMoves array
       playerMoves[i] = [];
+      nextRound.playerMoves[i] = [];
     }
 
     const ret = { 
       players,
       playerMoves,
+      nextRound,
       stack: deck.slice(TotalTurns * ctx.numPlayers),
       stopping: false
     };
@@ -207,27 +212,32 @@ const Hajs = Game({
         name: 'play phase',
         allowedMoves: ['takeCard', 'playCard'],
         turnOrder: TurnOrder.ANY,
-         endPhaseIf: (G, ctx) => {
-            const turnsPlayed = Object.keys(G.players).reduce((previous, current) => {
-              return previous + G.players[current].turnsPlayed;
-            }, 0);
-            const endPhase = turnsPlayed / ctx.numPlayers === TotalTurns;
-            console.log('play phase endPhaseIf ' + endPhase);
-            const ret = turnsPlayed / ctx.numPlayers === TotalTurns || G.stopping;
-            if (ret) {
-              return 'action phase';
-            }
-            return false;
-         },
+       endPhaseIf: (G, ctx) => {
+          if (G.turnEnd) {
+            return 'action phase';
+          }
+          return false;
+       },
          onPhaseBegin: (G, ctx) => {
-           console.log('play phase onPhaseBegin');
+            console.log('play phase onPhaseBegin');
             return G;
-         }, // stub
+         },
          onPhaseEnd: (G, ctx) => {
            console.log('play phase onPhaseEnd');
+           // remove turnEnd property
+           const { turnEnd, ...ret } = G;
+           return ret;
+         },
+         onTurnBegin: (G, ctx) => {
+            console.log('play phase onTurnBegin');
             return G;
-         }, // stub
+         },
          endTurnIf: (G, ctx) => {
+            // end turn if turnsPlayed is not equal for all players
+            const turnsPlayed = Object.keys(G.players).map(key => G.players[key].turnsPlayed);
+            if (Math.min(...turnsPlayed) !== Math.max(...turnsPlayed)) {
+              return true;
+            }
             // end turn if all players took one card and played one card
             const CardsTaken = Object.keys(G.players).reduce((previous, current) => {
                return previous + (G.players[current].cardTaken ? 1 : 0);
@@ -245,22 +255,24 @@ const Hajs = Game({
             return false;
          },
          onTurnEnd: (G, ctx) => {
+          let ret = { ...G };
+          let stopping = false;
            console.log('play phase onTurnEnd');
             // play all players cards in the order of order
-            let players = Object.keys(G.players).map(key => {
-               return {
-                  ...G.players[key],
-                  playerID: key
-               };
-            });
-            players = players.sort((previous, current) => {
-               if (previous.table.order < current.table.order) {
+            let players = Object.keys(
+              G.players
+            ).map(key => ({
+              ...G.players[key],
+              playerID: key
+            })).filter(tmp => (
+              tmp.table !== null
+            )).sort((previous, current) => {
+                if (previous.table.order < current.table.order) {
                   return -1;
-               }
-               return 1; // order property is unique to each card
+                }
+                return 1; // order property is unique to each card
             });
-            let ret = { ...G };
-            let stopping = false;
+
             players.some(tmp => {
               if (G.players[tmp.playerID].played) {
                 return false;
@@ -269,22 +281,11 @@ const Hajs = Game({
               // run cards action
               ret = ret.players[tmp.playerID].table.action(ret, ctx, tmp.playerID);
 
-              const playedPlayers = Object.assign({}, ...Object.keys(ret.players).map(key => {
-                if (key === tmp.playerID) {
-                  return {
-                    [key]: {
-                      ...ret.players[key],
-                      played: true
-                    }
-                  };
-                }
-                return { [key]: { ...ret.players[key] } };
-              }));
-
-              ret = {
-                ...ret,
-                players: playedPlayers
+              ret.players[tmp.playerID] = {
+                ...ret.players[tmp.playerID],
+                played: true
               };
+
               const cardStopping = ret.players[tmp.playerID].table.stopping;
               if (cardStopping) {
                 stopping = true;
@@ -313,7 +314,8 @@ const Hajs = Game({
             return { 
                ...ret,
                players,
-               stopping
+               stopping,
+               turnEnd: true
             };
          }
       }, {
@@ -345,8 +347,24 @@ const Hajs = Game({
         },
         onPhaseEnd: (G, ctx) => {
           console.log('action phase onPhaseEnd');
+          const playerMoves = Object.assign({}, ...Object.keys(G.players).map(key => {
+            if (G.players[key].table === null) {
+              return { [key]: G.nextRound.playerMoves[key] };
+            }
+            return { [key]: G.playerMoves[key] };
+          }));
+          const nextRoundPlayerMoves = Object.assign({}, ...Object.keys(G.players).map(key => {
+            if (G.players[key].table === null) {
+              return { [key]: [] };
+            }
+            return { [key]: G.nextRound.playerMoves[key] };
+          }));
           return {
             ...G,
+            playerMoves,
+            nextRound: {
+              playerMoves: nextRoundPlayerMoves
+            },
             stopping: false
           };
         },
@@ -361,35 +379,12 @@ const Hajs = Game({
        if (ctx.phase !== 'play phase') {
          return;
        }
-       /*
-      const TablesLength = Object.keys(G.players).reduce((previous, current) => {
-         if (G.players[current].table !== null) {
-            return previous + 1;
-         }
-         return previous;
-      }, 0);
-      */
       const turnsPlayed = Object.keys(G.players).reduce((previous, current) => {
         return previous + G.players[current].turnsPlayed;
       }, 0);
       const endGame = turnsPlayed / ctx.numPlayers === TotalTurns;
       console.log('end game if ' + endGame);
-      if (turnsPlayed / ctx.numPlayers === TotalTurns) { // && TablesLength === 0
-         /*
-         // add scores for all cards on player's display
-         const players = Object.assign({}, ...Object.keys(G.players).map((key) => {
-            const score = G.players[key].display.reduce((previous, current) => {
-               return previous + current.score;
-            }, 0);
-            return {
-               [key] : {
-                  ...G.players[key],
-                  score: score,
-                  display: []
-               }
-            };
-         }));
-         */
+      if (turnsPlayed / ctx.numPlayers === TotalTurns) {
          // find winner
          let winner = {};
          let maxScore = 0;
