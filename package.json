@@ -6,9 +6,9 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no tests yet @todo\" && exit 1",
-    "dev": "babel-node --presets env --plugins transform-object-rest-spread --inspect server.js --source-maps",
-    "dev-brk": "babel-node --presets env --plugins transform-object-rest-spread --inspect-brk server.js --source-maps",
-    "start": "node server.js"
+    "dev": "node -r esm --inspect server.js",
+    "dev-brk": "node -r esm --inspect-brk server.js",
+    "start": "node -r esm server.js"
   },
   "keywords": [
     "hajs",
@@ -18,8 +18,9 @@
   "license": "ISC",
   "dependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "boardgame.io": "^0.21.5",
+    "babel-preset-env": "^1.7.0",
+    "boardgame.io": "^0.25.5",
+    "esm": "^3.0.81",
     "install": "^0.10.4",
     "npm": "^5.7.1"
   },
