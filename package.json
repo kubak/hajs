@@ -6,8 +6,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no tests yet @todo\" && exit 1",
-    "dev": "node -r esm --inspect server.js",
-    "dev-brk": "node -r esm --inspect-brk server.js",
+    "dev": "nodemon -r esm --inspect server.js",
+    "dev-brk": "nodemon -r esm --inspect-brk server.js",
     "start": "node -r esm server.js"
   },
   "keywords": [
