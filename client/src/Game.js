@@ -59,9 +59,14 @@ const Hajs = Game({
           // remove deck
           // https://codeburst.io/use-es2015-object-rest-operator-to-omit-properties-38a3ecffe90
           const { deck, ...player } = G.players[key];
-          player.hand = [...G.players[key].hand, card];
-          player.cardTaken = true;
-          return { [key]: player };
+          return {
+            [key]: {
+              ...player,
+              hand: [...G.players[key].hand, card],
+              cardTaken: true,
+              deck: []
+            }
+          };
         } else if (key === (+ctx.playerID + 1) % ctx.numPlayers + '') {
           // pass deck to the next player
           return {
@@ -235,8 +240,11 @@ const Hajs = Game({
           // end turn if turnsPlayed is not equal for all players
           const turnsPlayed = Object.keys(G.players).map(key => G.players[key].turnsPlayed);
           if (Math.min(...turnsPlayed) !== Math.max(...turnsPlayed)) {
+            console.log('play phase endTurnIf (turnsPlayed) true');
             return true;
           }
+          console.log('play phase endTurnIf (turnsPlayed) false');
+
           // end turn if all players took one card and played one card
           const CardsTaken = Object.keys(G.players).reduce((previous, current) => {
              return previous + (G.players[current].cardTaken ? 1 : 0);
