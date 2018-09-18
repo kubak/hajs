@@ -109,7 +109,7 @@ const Hajs = Game({
               hand: [...playerHand.slice(0, cardIndex), ...playerHand.slice(cardIndex + 1)],
               cardPlayed: true
             }
-          }
+          };
         }
         return { [key] : { ...G.players[key] } };
       }));
@@ -149,7 +149,7 @@ const Hajs = Game({
         ...G,
         playerMoves,
         players
-      }
+      };
     }
   },
 
@@ -323,7 +323,6 @@ const Hajs = Game({
             players,
             stopping
           };
-          console.log(ret);
           return ret;
         }
       }, {
