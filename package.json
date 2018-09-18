@@ -6,8 +6,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no tests yet @todo\" && exit 1",
-    "dev": "nodemon -r esm --inspect server.js",
-    "dev-brk": "nodemon -r esm --inspect-brk server.js",
+    "dev": "./node_modules/nodemon/bin/nodemon.js -r esm --inspect server.js",
+    "dev-brk": "./node_modules/nodemon/bin/nodemon.js -r esm --inspect-brk server.js",
     "start": "node -r esm server.js"
   },
   "keywords": [
@@ -17,12 +17,12 @@
   "author": "kuba@kubak.pl",
   "license": "ISC",
   "dependencies": {
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
     "boardgame.io": "^0.25.5",
-    "esm": "^3.0.81",
-    "install": "^0.10.4",
-    "npm": "^5.7.1"
+    "esm": "^3.0.81"
+  },
+  "devDependencies": {
+    "eslint": "^5.6.0",
+    "nodemon": "^1.18.4"
   },
   "repository": {
     "type": "git",
