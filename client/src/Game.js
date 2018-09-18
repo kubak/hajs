@@ -37,8 +37,7 @@ const Hajs = Game({
       players,
       playerMoves,
       nextRound,
-      stack: deck.slice(TotalTurns * ctx.numPlayers),
-      stopping: false
+      stack: deck.slice(TotalTurns * ctx.numPlayers)
     };
     return ret;
   },
@@ -263,7 +262,6 @@ const Hajs = Game({
         },
         onTurnEnd: (G, ctx) => {
           let ret = { ...G };
-          let stopping = false;
           console.log('play phase onTurnEnd');
           // play all players cards in the order of order
           let players = Object.keys(
@@ -293,11 +291,7 @@ const Hajs = Game({
               played: true
             };
 
-            const cardStopping = ret.players[tmp.playerID].table.stopping;
-            if (cardStopping) {
-              stopping = true;
-            }
-            return cardStopping;
+            return ret.players[tmp.playerID].table.stopping;
           });
           // move cards from table to display, move nextDeck to deck for all players, set cardTaken and cardPlayed to false
           players = Object.assign({}, ...Object.keys(ret.players).map(key => {
@@ -320,8 +314,7 @@ const Hajs = Game({
           }));
           ret = {
             ...ret,
-            players,
-            stopping
+            players
           };
           return ret;
         }
@@ -371,8 +364,7 @@ const Hajs = Game({
             playerMoves,
             nextRound: {
               playerMoves: nextRoundPlayerMoves
-            },
-            stopping: false
+            }
           };
         },
         onTurnEnd: (G, ctx) => {
