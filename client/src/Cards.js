@@ -284,6 +284,30 @@ const Cards = [
        };
     },
     order: 14
+ }, {
+    id: 15,
+    name: 'two every round',
+    action: (G, ctx, playerID) => {
+        return G;
+    },
+    endOfRoundAction: (G, ctx, playerID) => {
+        const players = Object.assign({}, ...Object.keys(G.players).map(key => {
+            if (key === playerID) {
+                return {
+                    [key]: {
+                        ...G.players[key],
+                        score: G.players[key].score + 2
+                    }
+                };
+            }
+            return { [key]: { ...G.players[key] } };
+        }));
+        return {
+            ...G,
+            players
+        };
+    },
+    order: 15
  }
 ];
 

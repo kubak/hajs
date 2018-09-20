@@ -216,6 +216,7 @@ const Hajs = Game({
         allowedMoves: ['takeCard', 'playCard'],
         turnOrder: TurnOrder.ANY,
         endPhaseIf: (G, ctx) => {
+          console.log(`play phase endPhaseIf ${G.turnEnd}`);
           if (G.turnEnd) {
             return 'action phase';
           }
@@ -312,11 +313,43 @@ const Hajs = Game({
             }
             return { [key]: { ...ret.players[key] } };
           }));
-          return {
+
+          ret = {
             ...ret,
             players,
             turnEnd: true
           };
+
+          // end of round actions
+          const playerMovesLength = Object.keys(ret.players).reduce((previous, current) => {
+            return previous + ret.playerMoves[current].length;
+          }, 0);
+          if (playerMovesLength === 0) {
+            console.log('running end of round actions');
+            // find cards with end of round actions
+            Object.keys(ret.players)
+            // create a map of cards to run
+            .map(playerID => (
+              ret.players[playerID].display
+              .filter(card => typeof card.endOfRoundAction !== 'undefined')
+              .map((card, index) => ({
+                playerID: playerID,
+                cardIndex: index,
+                order: card.order
+              }))
+            ))
+            // flatten one level
+            .reduce((previous, current) => previous.concat(current), [])
+            // sort by order
+            .sort(val => val.order)
+            // run card's endOfRoundAction
+            .forEach(val => {
+              console.log(`running ${ret.players[val.playerID].display[val.cardIndex].name} for player ${val.playerID}`);
+              ret = ret.players[val.playerID].display[val.cardIndex].endOfRoundAction(ret, ctx, val.playerID);
+            });
+          }
+
+          return ret;
         }
       }, {
         name: 'action phase',
