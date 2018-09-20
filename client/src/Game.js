@@ -215,10 +215,8 @@ const Hajs = Game({
         name: 'play phase',
         allowedMoves: ['takeCard', 'playCard'],
         turnOrder: TurnOrder.ANY,
-        endPhaseIf: function (G, ctx) {
-          const turnEnd = this.endTurnIf(G, ctx);
-          console.log(`play phase endPhaseIf ${turnEnd}`);
-          if (turnEnd) {
+        endPhaseIf: (G, ctx) => {
+          if (G.turnEnd) {
             return 'action phase';
           }
           return false;
@@ -229,7 +227,9 @@ const Hajs = Game({
         },
         onPhaseEnd: (G, ctx) => {
           console.log('play phase onPhaseEnd');
-          return G;
+          // remove turnEnd property
+          const { turnEnd, ...ret } = G;
+          return ret;
         },
         onTurnBegin: (G, ctx) => {
           console.log('play phase onTurnBegin');
@@ -312,11 +312,11 @@ const Hajs = Game({
             }
             return { [key]: { ...ret.players[key] } };
           }));
-          ret = {
+          return {
             ...ret,
-            players
+            players,
+            turnEnd: true
           };
-          return ret;
         }
       }, {
         name: 'action phase',
